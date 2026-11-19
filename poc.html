@@ -5,22 +5,19 @@
   <h2 id="status">Checking for bridges...</h2>
   <pre id="output" style="white-space:pre-wrap; word-break:break-all;"></pre>
 
-  <script>
-    const bridges = Object.keys(window).filter(k => /Handler|Tracking|Coupang/.test(k));
-    document.title = 'bridges:' + bridges.join(',');
-    document.getElementById('status').innerText = bridges.length
-      ? 'Bridges found: ' + bridges.length
-      : 'No bridges found';
-    document.getElementById('output').innerText = JSON.stringify(bridges, null, 2);
-
+ <script>
+  const bridges = Object.keys(window).filter(k => /Handler|Tracking|Coupang/.test(k));
+  let out = JSON.stringify(bridges) + '\n\n';
+  bridges.forEach(name => {
     try {
-      if (window.messageHandlers) {
-        window.messageHandlers.postMessage('{"type":"ping"}');
-        document.getElementById('output').innerText += '\n\nmessageHandlers.postMessage() called successfully';
-      }
-    } catch (e) {
-      document.getElementById('output').innerText += '\n\nError calling bridge: ' + e.message;
+      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(window[name]) || {})
+        .concat(Object.keys(window[name]));
+      out += name + ': ' + JSON.stringify(methods) + '\n';
+    } catch(e) {
+      out += name + ': error - ' + e.message + '\n';
     }
-  </script>
+  });
+  document.getElementById('output').innerText = out;
+</script>
 </body>
 </html>
