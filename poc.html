@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>loading</title></head>
+<body style="font-family:sans-serif; padding:20px; background:#fff;">
+  <h2 id="status">Checking for bridges...</h2>
+  <pre id="output" style="white-space:pre-wrap; word-break:break-all;"></pre>
+
+  <script>
+    const bridges = Object.keys(window).filter(k => /Handler|Tracking|Coupang/.test(k));
+    document.title = 'bridges:' + bridges.join(',');
+    document.getElementById('status').innerText = bridges.length
+      ? 'Bridges found: ' + bridges.length
+      : 'No bridges found';
+    document.getElementById('output').innerText = JSON.stringify(bridges, null, 2);
+
+    try {
+      if (window.messageHandlers) {
+        window.messageHandlers.postMessage('{"type":"ping"}');
+        document.getElementById('output').innerText += '\n\nmessageHandlers.postMessage() called successfully';
+      }
+    } catch (e) {
+      document.getElementById('output').innerText += '\n\nError calling bridge: ' + e.message;
+    }
+  </script>
+</body>
+</html>
