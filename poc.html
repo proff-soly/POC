@@ -3,7 +3,17 @@
 <body>
 <script>
   const bridges = Object.keys(window).filter(k => /Handler|Tracking|Coupang/.test(k));
-  document.body.innerHTML = '<h2>Bridges found: ' + bridges.length + '</h2><pre>' + JSON.stringify(bridges, null, 2) + '</pre>';
+  let out = JSON.stringify(bridges) + '\n\n';
+  bridges.forEach(name => {
+    try {
+      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(window[name]) || {})
+        .concat(Object.keys(window[name]));
+      out += name + ': ' + JSON.stringify(methods) + '\n';
+    } catch(e) {
+      out += name + ': error - ' + e.message + '\n';
+    }
+  });
+  document.getElementById('output').innerText = out;
 </script>
 </body>
 </html>
